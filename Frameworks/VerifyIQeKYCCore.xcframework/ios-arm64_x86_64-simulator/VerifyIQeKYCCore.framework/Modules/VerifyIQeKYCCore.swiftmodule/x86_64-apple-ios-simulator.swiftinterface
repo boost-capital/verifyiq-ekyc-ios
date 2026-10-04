@@ -1,0 +1,1080 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.3.3 effective-5.10 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+// swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name VerifyIQeKYCCore
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.3.3
+import CoreGraphics
+import CryptoKit
+import Darwin
+import DeviceCheck
+import Foundation
+import ImageIO
+import MachO
+import ObjectiveC
+import Security
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public protocol EKYCAttestationProvider : AnyObject {
+  func attestation(forChallenge challenge: Foundation.Data, completion: @escaping (VerifyIQeKYCCore.EKYCAttestationPayload) -> Swift.Void)
+}
+final public class EKYCDefaultAttestationProvider : VerifyIQeKYCCore.EKYCAttestationProvider {
+  public init()
+  final public func attestation(forChallenge challenge: Foundation.Data, completion: @escaping (VerifyIQeKYCCore.EKYCAttestationPayload) -> Swift.Void)
+  @objc deinit
+}
+final public class EKYCStaticAttestationProvider : VerifyIQeKYCCore.EKYCAttestationProvider {
+  final public var challenges: [Foundation.Data] {
+    get
+  }
+  public init(payload: VerifyIQeKYCCore.EKYCAttestationPayload = .unavailable(reason: .simulator, detail: nil))
+  final public func attestation(forChallenge challenge: Foundation.Data, completion: @escaping (VerifyIQeKYCCore.EKYCAttestationPayload) -> Swift.Void)
+  @objc deinit
+}
+public struct EKYCCapturedImage : Swift.Equatable {
+  public let jpegData: Foundation.Data
+  public init(jpegData: Foundation.Data)
+  public static func == (a: VerifyIQeKYCCore.EKYCCapturedImage, b: VerifyIQeKYCCore.EKYCCapturedImage) -> Swift.Bool
+}
+public enum EKYCCaptureKind : Swift.Equatable {
+  case document(VerifyIQeKYCCore.EKYCDocumentType, VerifyIQeKYCCore.EKYCDocumentSide)
+  case selfie
+  public static func == (a: VerifyIQeKYCCore.EKYCCaptureKind, b: VerifyIQeKYCCore.EKYCCaptureKind) -> Swift.Bool
+}
+public struct EKYCCaptureRequest : Swift.Equatable {
+  public let kind: VerifyIQeKYCCore.EKYCCaptureKind
+  public let attempt: Swift.Int
+  public let maxLongEdgePx: Swift.Int
+  public let jpegQuality: Swift.Double
+  public let liveGate: VerifyIQeKYCCore.EKYCLiveGateConfig
+  public let qualityGate: VerifyIQeKYCCore.EKYCQualityGateConfig
+  public let specificQualityMessages: Swift.Bool
+  public init(kind: VerifyIQeKYCCore.EKYCCaptureKind, attempt: Swift.Int, maxLongEdgePx: Swift.Int, jpegQuality: Swift.Double, liveGate: VerifyIQeKYCCore.EKYCLiveGateConfig = .default, qualityGate: VerifyIQeKYCCore.EKYCQualityGateConfig = .default, specificQualityMessages: Swift.Bool = false)
+  public static func == (a: VerifyIQeKYCCore.EKYCCaptureRequest, b: VerifyIQeKYCCore.EKYCCaptureRequest) -> Swift.Bool
+}
+public enum EKYCCaptureResult : Swift.Equatable {
+  case captured(VerifyIQeKYCCore.EKYCCapturedImage)
+  case back
+  case cancelled
+  case failed(VerifyIQeKYCCore.EKYCError)
+  public static func == (a: VerifyIQeKYCCore.EKYCCaptureResult, b: VerifyIQeKYCCore.EKYCCaptureResult) -> Swift.Bool
+}
+public protocol EKYCCaptureSource : AnyObject {
+  func capture(_ request: VerifyIQeKYCCore.EKYCCaptureRequest, completion: @escaping (VerifyIQeKYCCore.EKYCCaptureResult) -> Swift.Void)
+}
+final public class EKYCFixtureCaptureSource : VerifyIQeKYCCore.EKYCCaptureSource {
+  final public var requests: [VerifyIQeKYCCore.EKYCCaptureRequest] {
+    get
+  }
+  public init(documents: [VerifyIQeKYCCore.EKYCDocumentSide : [Foundation.Data]], selfies: [Foundation.Data], queue: Dispatch.DispatchQueue = .main)
+  final public func capture(_ request: VerifyIQeKYCCore.EKYCCaptureRequest, completion: @escaping (VerifyIQeKYCCore.EKYCCaptureResult) -> Swift.Void)
+  @objc deinit
+}
+public enum EKYCDocumentType : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case khmNationalId
+  case passport
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCDocumentType]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCDocumentType] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCDocumentSide : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case front
+  case back
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCDocumentSide]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCDocumentSide] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCStage : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case intro
+  case documentType
+  case capture
+  case checking
+  case retry
+  case selfieIntro
+  case liveness
+  case confirm
+  case expired
+  case result
+  case cooldown
+  case sessionExpired
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCStage]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCStage] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCRetryBudget : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case quality
+  case liveness
+  case confirmation
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCRetryBudget]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCRetryBudget] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCCaptureMessageKey : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case qualityGeneric
+  case livenessFail
+  case ocrIncomplete
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCCaptureMessageKey]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCCaptureMessageKey] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCCaptureFlag : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case reviewFieldsMissing
+  case expired
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCCaptureFlag]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCCaptureFlag] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCEndingScreen : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case submitted
+  case retriesExhausted
+  case expiredDocument
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCEndingScreen]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCEndingScreen] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCServerErrorCode : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case invalidRequest
+  case invalidToken
+  case sessionExpired
+  case sessionInUse
+  case sessionCompleted
+  case customerInCooldown
+  case challengeExpired
+  case deviceNotTrusted
+  case attestationInvalid
+  case sdkVersionUnsupported
+  case unsupportedDocumentType
+  case unsupportedSide
+  case imageTooLarge
+  case unsupportedMediaType
+  case stageNotAllowed
+  case retriesExhausted
+  case documentSwitchCapReached
+  case livenessUnavailable
+  case rateLimited
+  case notFound
+  case internalError
+  case serviceUnavailable
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCServerErrorCode]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCServerErrorCode] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCHostErrorCode : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case cameraUnavailable
+  case serviceUnavailable
+  case sessionExpired
+  case cancelledCooldown
+  case invalidConfiguration
+  case invalidToken
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCHostErrorCode]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCHostErrorCode] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCLocale : Swift.String, Swift.Codable, Swift.CaseIterable, Swift.Equatable {
+  case english
+  case khmer
+  case simplifiedChinese
+  public static func from(tag: Swift.String) -> VerifyIQeKYCCore.EKYCLocale
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCLocale]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCLocale] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct EKYCCompletePayload : Swift.Equatable {
+  public let sessionId: Swift.String
+  public let documentType: VerifyIQeKYCCore.EKYCDocumentType?
+  public init(sessionId: Swift.String, documentType: VerifyIQeKYCCore.EKYCDocumentType?)
+  public static func == (a: VerifyIQeKYCCore.EKYCCompletePayload, b: VerifyIQeKYCCore.EKYCCompletePayload) -> Swift.Bool
+}
+public struct EKYCCancelPayload : Swift.Equatable {
+  public let sessionId: Swift.String
+  public let stage: VerifyIQeKYCCore.EKYCStage
+  public init(sessionId: Swift.String, stage: VerifyIQeKYCCore.EKYCStage)
+  public static func == (a: VerifyIQeKYCCore.EKYCCancelPayload, b: VerifyIQeKYCCore.EKYCCancelPayload) -> Swift.Bool
+}
+public struct EKYCErrorPayload : Swift.Equatable {
+  public let sessionId: Swift.String?
+  public let code: VerifyIQeKYCCore.EKYCHostErrorCode
+  public init(sessionId: Swift.String?, code: VerifyIQeKYCCore.EKYCHostErrorCode)
+  public static func == (a: VerifyIQeKYCCore.EKYCErrorPayload, b: VerifyIQeKYCCore.EKYCErrorPayload) -> Swift.Bool
+}
+public struct EKYCDeviceInfo : Swift.Equatable {
+  public let appId: Swift.String
+  public let osVersion: Swift.String
+  public let deviceModel: Swift.String
+  public let installId: Swift.String
+  public init(appId: Swift.String, osVersion: Swift.String, deviceModel: Swift.String, installId: Swift.String)
+  public static func current(installIdStore: any VerifyIQeKYCCore.InstallIdStore = UserDefaultsInstallIdStore()) -> VerifyIQeKYCCore.EKYCDeviceInfo
+  public static func == (a: VerifyIQeKYCCore.EKYCDeviceInfo, b: VerifyIQeKYCCore.EKYCDeviceInfo) -> Swift.Bool
+}
+public protocol InstallIdStore {
+  func installId() -> Swift.String
+}
+final public class UserDefaultsInstallIdStore : VerifyIQeKYCCore.InstallIdStore {
+  public init(defaults: Foundation.UserDefaults = UserDefaults(suiteName: "io.verifyiq.ekyc") ?? .standard)
+  final public func installId() -> Swift.String
+  @objc deinit
+}
+public enum EKYCLivenessMode : Swift.Equatable {
+  case required
+  case whenSupported
+  case disabled
+  public static func == (a: VerifyIQeKYCCore.EKYCLivenessMode, b: VerifyIQeKYCCore.EKYCLivenessMode) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCColor : Swift.Equatable {
+  public var red: Swift.Double
+  public var green: Swift.Double
+  public var blue: Swift.Double
+  public var alpha: Swift.Double
+  public init(red: Swift.Double, green: Swift.Double, blue: Swift.Double, alpha: Swift.Double = 1)
+  public init?(hex: Swift.String)
+  public func mixed(towardsWhite amount: Swift.Double) -> VerifyIQeKYCCore.EKYCColor
+  public static func == (a: VerifyIQeKYCCore.EKYCColor, b: VerifyIQeKYCCore.EKYCColor) -> Swift.Bool
+}
+public struct EKYCTheme : Swift.Equatable {
+  public var accent: VerifyIQeKYCCore.EKYCColor
+  public static let defaultAccent: VerifyIQeKYCCore.EKYCColor
+  public init(accent: VerifyIQeKYCCore.EKYCColor = EKYCTheme.defaultAccent)
+  public init(accentHex: Swift.String)
+  public var accentDeep: VerifyIQeKYCCore.EKYCColor {
+    get
+  }
+  public var accentSoft: VerifyIQeKYCCore.EKYCColor {
+    get
+  }
+  public static let `default`: VerifyIQeKYCCore.EKYCTheme
+  @available(*, deprecated, renamed: "accent")
+  public var primary: VerifyIQeKYCCore.EKYCColor {
+    get
+    set
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCTheme, b: VerifyIQeKYCCore.EKYCTheme) -> Swift.Bool
+}
+public struct EKYCConfiguration {
+  public var language: VerifyIQeKYCCore.EKYCLocale?
+  public var theme: VerifyIQeKYCCore.EKYCTheme
+  public var eventListener: (any VerifyIQeKYCCore.EKYCEventListener)?
+  public var liveness: VerifyIQeKYCCore.EKYCLivenessMode
+  public var documentTypes: [VerifyIQeKYCCore.EKYCDocumentType]?
+  public var developmentMode: Swift.Bool
+  public var pinning: VerifyIQeKYCCore.EKYCPinningPolicy
+  public var livenessRunner: (any VerifyIQeKYCCore.EKYCLivenessRunner)?
+  public var captureSource: (any VerifyIQeKYCCore.EKYCCaptureSource)?
+  public init(language: VerifyIQeKYCCore.EKYCLocale? = nil, theme: VerifyIQeKYCCore.EKYCTheme = .default, eventListener: (any VerifyIQeKYCCore.EKYCEventListener)? = nil, liveness: VerifyIQeKYCCore.EKYCLivenessMode = .whenSupported, documentTypes: [VerifyIQeKYCCore.EKYCDocumentType]? = nil, developmentMode: Swift.Bool = false, pinning: VerifyIQeKYCCore.EKYCPinningPolicy = .default, livenessRunner: (any VerifyIQeKYCCore.EKYCLivenessRunner)? = nil, captureSource: (any VerifyIQeKYCCore.EKYCCaptureSource)? = nil)
+  public init(language tag: Swift.String, theme: VerifyIQeKYCCore.EKYCTheme = .default)
+  @available(*, deprecated, renamed: "language")
+  public var locale: VerifyIQeKYCCore.EKYCLocale? {
+    get
+    set
+  }
+}
+public enum EKYCError : Swift.Error, Swift.Equatable {
+  case invalidToken
+  case sessionExpired
+  case sessionInUse
+  case customerInCooldown(until: Foundation.Date?)
+  case deviceNotTrusted
+  case cameraPermissionDenied
+  case unsupportedDevice
+  case sdkVersionUnsupported
+  case livenessUnavailable
+  case insecureConnection
+  case network
+  case serviceUnavailable
+  case invalidConfiguration(Swift.String)
+  case internalError(Swift.String)
+  public var code: Swift.String {
+    get
+  }
+  public var isRetryable: Swift.Bool {
+    get
+  }
+  public var hostCode: VerifyIQeKYCCore.EKYCHostErrorCode {
+    get
+  }
+  public var messageKey: Swift.String {
+    get
+  }
+  public var titleKey: Swift.String {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCError, b: VerifyIQeKYCCore.EKYCError) -> Swift.Bool
+}
+public enum EKYCSDK {
+  public static let version: Swift.String
+  public static let apiVersion: Swift.String
+  public static let livenessMinimumIOS: Swift.String
+}
+public enum EKYCEnvironment : Swift.String, Swift.Codable, Swift.Equatable {
+  case test
+  case live
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct EKYCSession : Swift.Equatable {
+  public let token: Swift.String
+  public let sdkApiBaseURL: Foundation.URL
+  public init(token: Swift.String, sdkApiBaseURL: Foundation.URL)
+  public var environment: VerifyIQeKYCCore.EKYCEnvironment? {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCSession, b: VerifyIQeKYCCore.EKYCSession) -> Swift.Bool
+}
+public enum EKYCEventName : Swift.String, Swift.Equatable, Swift.CaseIterable {
+  case flowStarted
+  case documentTypeSelected
+  case captureShown
+  case shutter
+  case captureBlocked
+  case documentUploaded
+  case qualityRetry
+  case selfieStarted
+  case selfieFinished
+  case livenessRetry
+  case expiredShown
+  case documentSwitched
+  case confirmationShown
+  case confirmationDeclined
+  case finished
+  case cancelled
+  case failed
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCEventName]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCEventName] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct EKYCEvent : Swift.Equatable {
+  public static let allowedPropertyKeys: Swift.Set<Swift.String>
+  public let name: VerifyIQeKYCCore.EKYCEventName
+  public let sessionId: Swift.String?
+  public let stage: VerifyIQeKYCCore.EKYCStage
+  public let timestamp: Foundation.Date
+  public let properties: [Swift.String : Swift.String]
+  public init(name: VerifyIQeKYCCore.EKYCEventName, sessionId: Swift.String?, stage: VerifyIQeKYCCore.EKYCStage, timestamp: Foundation.Date = Date(), properties: [Swift.String : Swift.String] = [:])
+  @available(*, deprecated, renamed: "stage")
+  public var step: Swift.String {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCEvent, b: VerifyIQeKYCCore.EKYCEvent) -> Swift.Bool
+}
+public protocol EKYCEventListener : AnyObject {
+  func ekyc(didEmit event: VerifyIQeKYCCore.EKYCEvent)
+}
+final public class EKYCFlowEngine {
+  final public let session: VerifyIQeKYCCore.EKYCSession
+  final public let configuration: VerifyIQeKYCCore.EKYCConfiguration
+  final public var sessionId: Swift.String? {
+    get
+  }
+  final public var cycle: Swift.Int {
+    get
+  }
+  final public var isFinished: Swift.Bool {
+    get
+  }
+  final public var strings: VerifyIQeKYCCore.EKYCStrings {
+    get
+  }
+  final public var stage: VerifyIQeKYCCore.EKYCStage {
+    get
+  }
+  final public var documentType: VerifyIQeKYCCore.EKYCDocumentType? {
+    get
+  }
+  public init(session: VerifyIQeKYCCore.EKYCSession, configuration: VerifyIQeKYCCore.EKYCConfiguration, ui: any VerifyIQeKYCCore.EKYCFlowUI, transport: (any VerifyIQeKYCCore.EKYCTransport)? = nil, attestation: (any VerifyIQeKYCCore.EKYCAttestationProvider)? = nil, options: VerifyIQeKYCCore.EKYCFlowEngineOptions = EKYCFlowEngineOptions(), callbackQueue: Dispatch.DispatchQueue = .main)
+  final public func start()
+  final public func close()
+  final public func close(from stage: VerifyIQeKYCCore.EKYCStage)
+  final public func cancel()
+  @objc deinit
+}
+public enum EKYCResult : Swift.Equatable {
+  case complete(VerifyIQeKYCCore.EKYCCompletePayload)
+  case cancel(VerifyIQeKYCCore.EKYCCancelPayload)
+  case error(VerifyIQeKYCCore.EKYCErrorPayload)
+  public static func == (a: VerifyIQeKYCCore.EKYCResult, b: VerifyIQeKYCCore.EKYCResult) -> Swift.Bool
+}
+public enum EKYCRejectionReason : Swift.Equatable {
+  case documentExpired
+  public static func == (a: VerifyIQeKYCCore.EKYCRejectionReason, b: VerifyIQeKYCCore.EKYCRejectionReason) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@available(*, deprecated, message: "Use EKYCResult through the onComplete, onCancel and onError callbacks")
+public enum EKYCOutcome : Swift.Equatable {
+  case submitted(sessionId: Swift.String)
+  case retriesExhausted(sessionId: Swift.String)
+  case rejected(VerifyIQeKYCCore.EKYCRejectionReason, sessionId: Swift.String)
+  case cancelled
+  case failed(VerifyIQeKYCCore.EKYCError)
+  public var sessionId: Swift.String? {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCOutcome, b: VerifyIQeKYCCore.EKYCOutcome) -> Swift.Bool
+}
+public struct EKYCTermination : Swift.Equatable {
+  public let result: VerifyIQeKYCCore.EKYCResult
+  public let screen: VerifyIQeKYCCore.EKYCEndingScreen?
+  public let error: VerifyIQeKYCCore.EKYCError?
+  public init(result: VerifyIQeKYCCore.EKYCResult, screen: VerifyIQeKYCCore.EKYCEndingScreen?, error: VerifyIQeKYCCore.EKYCError?)
+  @available(*, deprecated, message: "Use result")
+  public var outcome: VerifyIQeKYCCore.EKYCOutcome {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCTermination, b: VerifyIQeKYCCore.EKYCTermination) -> Swift.Bool
+}
+public enum EKYCProgress : Swift.Equatable {
+  case starting
+  case checkingLiveness
+  case submitting
+  public static func == (a: VerifyIQeKYCCore.EKYCProgress, b: VerifyIQeKYCCore.EKYCProgress) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCIntroScreen : Swift.Equatable {
+  public let documentTypes: [VerifyIQeKYCCore.EKYCDocumentType]?
+  public let sheetOpen: Swift.Bool
+  public init(documentTypes: [VerifyIQeKYCCore.EKYCDocumentType]?, sheetOpen: Swift.Bool)
+  public static func == (a: VerifyIQeKYCCore.EKYCIntroScreen, b: VerifyIQeKYCCore.EKYCIntroScreen) -> Swift.Bool
+}
+public enum EKYCIntroDecision : Swift.Equatable {
+  case document(VerifyIQeKYCCore.EKYCDocumentType)
+  case close
+  public static func == (a: VerifyIQeKYCCore.EKYCIntroDecision, b: VerifyIQeKYCCore.EKYCIntroDecision) -> Swift.Bool
+}
+public struct EKYCCooldownScreen : Swift.Equatable {
+  public let until: Foundation.Date?
+  public let minutes: Swift.Int
+  public init(until: Foundation.Date?, minutes: Swift.Int)
+  public static func == (a: VerifyIQeKYCCore.EKYCCooldownScreen, b: VerifyIQeKYCCore.EKYCCooldownScreen) -> Swift.Bool
+}
+public enum EKYCRetryKind : Swift.Equatable {
+  case quality
+  case liveness
+  public static func == (a: VerifyIQeKYCCore.EKYCRetryKind, b: VerifyIQeKYCCore.EKYCRetryKind) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCRetryPrompt : Swift.Equatable {
+  public let kind: VerifyIQeKYCCore.EKYCRetryKind
+  public let messageKey: Swift.String
+  public let attemptsLeft: Swift.Int
+  public let documentType: VerifyIQeKYCCore.EKYCDocumentType?
+  public init(kind: VerifyIQeKYCCore.EKYCRetryKind, messageKey: Swift.String, attemptsLeft: Swift.Int, documentType: VerifyIQeKYCCore.EKYCDocumentType?)
+  public static func == (a: VerifyIQeKYCCore.EKYCRetryPrompt, b: VerifyIQeKYCCore.EKYCRetryPrompt) -> Swift.Bool
+}
+public enum EKYCRetryDecision : Swift.Equatable {
+  case retry
+  case close
+  public static func == (a: VerifyIQeKYCCore.EKYCRetryDecision, b: VerifyIQeKYCCore.EKYCRetryDecision) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public enum EKYCSelfieIntroDecision : Swift.Equatable {
+  case ready
+  case close
+  public static func == (a: VerifyIQeKYCCore.EKYCSelfieIntroDecision, b: VerifyIQeKYCCore.EKYCSelfieIntroDecision) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCCameraPermissionScreen : Swift.Equatable {
+  public let stage: VerifyIQeKYCCore.EKYCStage
+  public init(stage: VerifyIQeKYCCore.EKYCStage)
+  public static func == (a: VerifyIQeKYCCore.EKYCCameraPermissionScreen, b: VerifyIQeKYCCore.EKYCCameraPermissionScreen) -> Swift.Bool
+}
+public enum EKYCCameraPermissionDecision : Swift.Equatable {
+  case retry
+  case close
+  public static func == (a: VerifyIQeKYCCore.EKYCCameraPermissionDecision, b: VerifyIQeKYCCore.EKYCCameraPermissionDecision) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCConfirmationItem : Swift.Equatable {
+  public let field: Swift.String
+  public let label: Swift.String
+  public let value: Swift.String
+  public init(field: Swift.String, label: Swift.String, value: Swift.String)
+  public static func == (a: VerifyIQeKYCCore.EKYCConfirmationItem, b: VerifyIQeKYCCore.EKYCConfirmationItem) -> Swift.Bool
+}
+public struct EKYCConfirmationScreen : Swift.Equatable {
+  public let documentType: VerifyIQeKYCCore.EKYCDocumentType
+  public let labels: [VerifyIQeKYCCore.EKYCConfirmationItem]
+  public let items: [VerifyIQeKYCCore.EKYCConfirmationItem]?
+  public init(documentType: VerifyIQeKYCCore.EKYCDocumentType, labels: [VerifyIQeKYCCore.EKYCConfirmationItem], items: [VerifyIQeKYCCore.EKYCConfirmationItem]?)
+  public static func == (a: VerifyIQeKYCCore.EKYCConfirmationScreen, b: VerifyIQeKYCCore.EKYCConfirmationScreen) -> Swift.Bool
+}
+public enum EKYCConfirmationDecision : Swift.Equatable {
+  case accept
+  case decline
+  case close
+  public static func == (a: VerifyIQeKYCCore.EKYCConfirmationDecision, b: VerifyIQeKYCCore.EKYCConfirmationDecision) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCReviewFieldsMissingPrompt : Swift.Equatable {
+  public let documentType: VerifyIQeKYCCore.EKYCDocumentType
+  public let attemptsLeft: Swift.Int
+  public init(documentType: VerifyIQeKYCCore.EKYCDocumentType, attemptsLeft: Swift.Int)
+  public static func == (a: VerifyIQeKYCCore.EKYCReviewFieldsMissingPrompt, b: VerifyIQeKYCCore.EKYCReviewFieldsMissingPrompt) -> Swift.Bool
+}
+public struct EKYCExpiredScreen : Swift.Equatable {
+  public let documentType: VerifyIQeKYCCore.EKYCDocumentType
+  public let expirationDate: Swift.String?
+  public let switchesLeft: Swift.Int
+  public init(documentType: VerifyIQeKYCCore.EKYCDocumentType, expirationDate: Swift.String?, switchesLeft: Swift.Int)
+  public static func == (a: VerifyIQeKYCCore.EKYCExpiredScreen, b: VerifyIQeKYCCore.EKYCExpiredScreen) -> Swift.Bool
+}
+public enum EKYCExpiredDecision : Swift.Equatable {
+  case switchDocument
+  case close
+  public static func == (a: VerifyIQeKYCCore.EKYCExpiredDecision, b: VerifyIQeKYCCore.EKYCExpiredDecision) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public struct EKYCEndScreen : Swift.Equatable {
+  public let screen: VerifyIQeKYCCore.EKYCEndingScreen
+  public let retryAfter: Foundation.Date?
+  public let cooldownMinutes: Swift.Int
+  public init(screen: VerifyIQeKYCCore.EKYCEndingScreen, retryAfter: Foundation.Date?, cooldownMinutes: Swift.Int)
+  public static func == (a: VerifyIQeKYCCore.EKYCEndScreen, b: VerifyIQeKYCCore.EKYCEndScreen) -> Swift.Bool
+}
+public protocol EKYCFlowUI : AnyObject {
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, didUpdate progress: VerifyIQeKYCCore.EKYCProgress)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showIntro screen: VerifyIQeKYCCore.EKYCIntroScreen, completion: @escaping (VerifyIQeKYCCore.EKYCIntroDecision) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showCooldown screen: VerifyIQeKYCCore.EKYCCooldownScreen, completion: @escaping () -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, capture request: VerifyIQeKYCCore.EKYCCaptureRequest, completion: @escaping (VerifyIQeKYCCore.EKYCCaptureResult) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showChecking image: VerifyIQeKYCCore.EKYCCapturedImage, documentType: VerifyIQeKYCCore.EKYCDocumentType)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showRetry prompt: VerifyIQeKYCCore.EKYCRetryPrompt, completion: @escaping (VerifyIQeKYCCore.EKYCRetryDecision) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showSelfieIntro completion: @escaping (VerifyIQeKYCCore.EKYCSelfieIntroDecision) -> Swift.Void)
+  func flowWillRunLiveness(_ flow: VerifyIQeKYCCore.EKYCFlowEngine)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showConfirmation screen: VerifyIQeKYCCore.EKYCConfirmationScreen, completion: @escaping (VerifyIQeKYCCore.EKYCConfirmationDecision) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, updateConfirmation screen: VerifyIQeKYCCore.EKYCConfirmationScreen)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showReviewFieldsMissing prompt: VerifyIQeKYCCore.EKYCReviewFieldsMissingPrompt, completion: @escaping () -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showExpired screen: VerifyIQeKYCCore.EKYCExpiredScreen, completion: @escaping (VerifyIQeKYCCore.EKYCExpiredDecision) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showSessionExpired completion: @escaping () -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showEnd screen: VerifyIQeKYCCore.EKYCEndScreen, completion: @escaping () -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showError error: VerifyIQeKYCCore.EKYCError, completion: @escaping () -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showRetryableError error: VerifyIQeKYCCore.EKYCError, completion: @escaping (VerifyIQeKYCCore.EKYCErrorDecision) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, reconnecting: Swift.Bool)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showCameraPermission screen: VerifyIQeKYCCore.EKYCCameraPermissionScreen, completion: @escaping (VerifyIQeKYCCore.EKYCCameraPermissionDecision) -> Swift.Void)
+  func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, didFinish termination: VerifyIQeKYCCore.EKYCTermination)
+}
+public enum EKYCErrorDecision : Swift.Equatable {
+  case tryAgain
+  case done
+  public static func == (a: VerifyIQeKYCCore.EKYCErrorDecision, b: VerifyIQeKYCCore.EKYCErrorDecision) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension VerifyIQeKYCCore.EKYCFlowUI {
+  public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showRetryableError error: VerifyIQeKYCCore.EKYCError, completion: @escaping (VerifyIQeKYCCore.EKYCErrorDecision) -> Swift.Void)
+  public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, reconnecting: Swift.Bool)
+  public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showCameraPermission screen: VerifyIQeKYCCore.EKYCCameraPermissionScreen, completion: @escaping (VerifyIQeKYCCore.EKYCCameraPermissionDecision) -> Swift.Void)
+}
+public struct EKYCFlowEngineOptions {
+  public var retryDelays: [Foundation.TimeInterval]
+  public var minimumCheckingSeconds: Foundation.TimeInterval
+  public var confirmationTimeout: Foundation.TimeInterval?
+  public var deviceInfo: VerifyIQeKYCCore.EKYCDeviceInfo?
+  public var sdkVersion: Swift.String
+  public static let defaultRetryDelays: [Foundation.TimeInterval]
+  public init(retryDelays: [Foundation.TimeInterval] = EKYCFlowEngineOptions.defaultRetryDelays, minimumCheckingSeconds: Foundation.TimeInterval = 0.7, confirmationTimeout: Foundation.TimeInterval? = nil, deviceInfo: VerifyIQeKYCCore.EKYCDeviceInfo? = nil, sdkVersion: Swift.String = EKYCSDK.version)
+}
+final public class EKYCHeadlessUI : VerifyIQeKYCCore.EKYCFlowUI {
+  public enum Step : Swift.Equatable {
+    case progress(VerifyIQeKYCCore.EKYCProgress)
+    case intro([VerifyIQeKYCCore.EKYCDocumentType]?, sheetOpen: Swift.Bool)
+    case cooldown(minutes: Swift.Int)
+    case capture(VerifyIQeKYCCore.EKYCCaptureKind, attempt: Swift.Int)
+    case checking(VerifyIQeKYCCore.EKYCDocumentType)
+    case retry(VerifyIQeKYCCore.EKYCRetryKind, messageKey: Swift.String, attemptsLeft: Swift.Int)
+    case selfieIntro
+    case liveness
+    case confirm([VerifyIQeKYCCore.EKYCConfirmationItem]?)
+    case confirmUpdated([VerifyIQeKYCCore.EKYCConfirmationItem])
+    case reviewFieldsMissing(attemptsLeft: Swift.Int)
+    case expired(switchesLeft: Swift.Int, decision: VerifyIQeKYCCore.EKYCExpiredDecision)
+    case sessionExpired
+    case end(VerifyIQeKYCCore.EKYCEndingScreen)
+    case error(VerifyIQeKYCCore.EKYCError)
+    case retryableError(VerifyIQeKYCCore.EKYCError, decision: VerifyIQeKYCCore.EKYCErrorDecision)
+    case reconnecting(Swift.Bool)
+    case cameraPermission(VerifyIQeKYCCore.EKYCStage, decision: VerifyIQeKYCCore.EKYCCameraPermissionDecision)
+    case finish(VerifyIQeKYCCore.EKYCResult)
+    public static func == (a: VerifyIQeKYCCore.EKYCHeadlessUI.Step, b: VerifyIQeKYCCore.EKYCHeadlessUI.Step) -> Swift.Bool
+  }
+  final public var steps: [VerifyIQeKYCCore.EKYCHeadlessUI.Step] {
+    get
+  }
+  public init(captureSource: (any VerifyIQeKYCCore.EKYCCaptureSource)? = nil, documentType: VerifyIQeKYCCore.EKYCDocumentType? = nil, confirmDecisions: [VerifyIQeKYCCore.EKYCConfirmationDecision] = [], expiredDecisions: [VerifyIQeKYCCore.EKYCExpiredDecision] = [], closeAt: VerifyIQeKYCCore.EKYCStage? = nil, tryAgainTimes: Swift.Int = 0, cameraPermissionDecisions: [VerifyIQeKYCCore.EKYCCameraPermissionDecision] = [], onFinish: @escaping (VerifyIQeKYCCore.EKYCTermination) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, didUpdate progress: VerifyIQeKYCCore.EKYCProgress)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showIntro screen: VerifyIQeKYCCore.EKYCIntroScreen, completion: @escaping (VerifyIQeKYCCore.EKYCIntroDecision) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showCooldown screen: VerifyIQeKYCCore.EKYCCooldownScreen, completion: @escaping () -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, capture request: VerifyIQeKYCCore.EKYCCaptureRequest, completion: @escaping (VerifyIQeKYCCore.EKYCCaptureResult) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showChecking image: VerifyIQeKYCCore.EKYCCapturedImage, documentType: VerifyIQeKYCCore.EKYCDocumentType)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showRetry prompt: VerifyIQeKYCCore.EKYCRetryPrompt, completion: @escaping (VerifyIQeKYCCore.EKYCRetryDecision) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showSelfieIntro completion: @escaping (VerifyIQeKYCCore.EKYCSelfieIntroDecision) -> Swift.Void)
+  final public func flowWillRunLiveness(_ flow: VerifyIQeKYCCore.EKYCFlowEngine)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showConfirmation screen: VerifyIQeKYCCore.EKYCConfirmationScreen, completion: @escaping (VerifyIQeKYCCore.EKYCConfirmationDecision) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, updateConfirmation screen: VerifyIQeKYCCore.EKYCConfirmationScreen)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showReviewFieldsMissing prompt: VerifyIQeKYCCore.EKYCReviewFieldsMissingPrompt, completion: @escaping () -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showExpired screen: VerifyIQeKYCCore.EKYCExpiredScreen, completion: @escaping (VerifyIQeKYCCore.EKYCExpiredDecision) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showSessionExpired completion: @escaping () -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showEnd screen: VerifyIQeKYCCore.EKYCEndScreen, completion: @escaping () -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showError error: VerifyIQeKYCCore.EKYCError, completion: @escaping () -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showRetryableError error: VerifyIQeKYCCore.EKYCError, completion: @escaping (VerifyIQeKYCCore.EKYCErrorDecision) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, reconnecting: Swift.Bool)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, showCameraPermission screen: VerifyIQeKYCCore.EKYCCameraPermissionScreen, completion: @escaping (VerifyIQeKYCCore.EKYCCameraPermissionDecision) -> Swift.Void)
+  final public func flow(_ flow: VerifyIQeKYCCore.EKYCFlowEngine, didFinish termination: VerifyIQeKYCCore.EKYCTermination)
+  @objc deinit
+}
+public struct EKYCLiveGateConfig : Swift.Codable, Swift.Equatable {
+  public struct EdgeDetection : Swift.Codable, Swift.Equatable {
+    public let enabled: Swift.Bool
+    public let margin: Swift.Double
+    public let band: Swift.Double
+    public let segments: Swift.Int
+    public let edgeDiff: Swift.Double
+    public let lineFill: Swift.Double
+    public let prominence: Swift.Double
+    public let maxTilt: Swift.Double
+    public let minSides: Swift.Int
+    public init(enabled: Swift.Bool, margin: Swift.Double, band: Swift.Double, segments: Swift.Int, edgeDiff: Swift.Double, lineFill: Swift.Double, prominence: Swift.Double, maxTilt: Swift.Double, minSides: Swift.Int)
+    public static func == (a: VerifyIQeKYCCore.EKYCLiveGateConfig.EdgeDetection, b: VerifyIQeKYCCore.EKYCLiveGateConfig.EdgeDetection) -> Swift.Bool
+    public func encode(to encoder: any Swift.Encoder) throws
+    public init(from decoder: any Swift.Decoder) throws
+  }
+  public let enabled: Swift.Bool
+  public let intervalMs: Swift.Int
+  public let analysisWidthPx: Swift.Int
+  public let blurMin: Swift.Double
+  public let stableFrames: Swift.Int
+  public let edgeDetection: VerifyIQeKYCCore.EKYCLiveGateConfig.EdgeDetection
+  public init(enabled: Swift.Bool, intervalMs: Swift.Int, analysisWidthPx: Swift.Int, blurMin: Swift.Double, stableFrames: Swift.Int, edgeDetection: VerifyIQeKYCCore.EKYCLiveGateConfig.EdgeDetection)
+  public static let `default`: VerifyIQeKYCCore.EKYCLiveGateConfig
+  public static func == (a: VerifyIQeKYCCore.EKYCLiveGateConfig, b: VerifyIQeKYCCore.EKYCLiveGateConfig) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct EKYCPixelRect : Swift.Equatable {
+  public var x: Swift.Double
+  public var y: Swift.Double
+  public var width: Swift.Double
+  public var height: Swift.Double
+  public init(x: Swift.Double, y: Swift.Double, width: Swift.Double, height: Swift.Double)
+  public static func == (a: VerifyIQeKYCCore.EKYCPixelRect, b: VerifyIQeKYCCore.EKYCPixelRect) -> Swift.Bool
+}
+public struct EKYCEdgeDetection : Swift.Equatable {
+  public var top: Swift.Bool
+  public var right: Swift.Bool
+  public var bottom: Swift.Bool
+  public var left: Swift.Bool
+  public init(top: Swift.Bool = false, right: Swift.Bool = false, bottom: Swift.Bool = false, left: Swift.Bool = false)
+  public var count: Swift.Int {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCEdgeDetection, b: VerifyIQeKYCCore.EKYCEdgeDetection) -> Swift.Bool
+}
+public enum EKYCLiveIssue : Swift.String, Swift.Equatable {
+  case resolution
+  case noDocument
+  case blur
+  case glare
+  public var specificMessageKey: Swift.String {
+    get
+  }
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct EKYCLiveFrame : Swift.Equatable {
+  public let grey: [Swift.Float]
+  public let width: Swift.Int
+  public let height: Swift.Int
+  public let guide: VerifyIQeKYCCore.EKYCPixelRect
+  public let glareShare: Swift.Double
+  public let nativeLongEdgePx: Swift.Int
+  public init(grey: [Swift.Float], width: Swift.Int, height: Swift.Int, guide: VerifyIQeKYCCore.EKYCPixelRect, glareShare: Swift.Double, nativeLongEdgePx: Swift.Int)
+  public static func == (a: VerifyIQeKYCCore.EKYCLiveFrame, b: VerifyIQeKYCCore.EKYCLiveFrame) -> Swift.Bool
+}
+public struct EKYCLiveFrameResult : Swift.Equatable {
+  public let ok: Swift.Bool
+  public let issue: VerifyIQeKYCCore.EKYCLiveIssue?
+  public let blur: Swift.Double
+  public let glare: Swift.Double
+  public let edges: VerifyIQeKYCCore.EKYCEdgeDetection?
+  public let stable: Swift.Int
+  public init(ok: Swift.Bool, issue: VerifyIQeKYCCore.EKYCLiveIssue?, blur: Swift.Double, glare: Swift.Double, edges: VerifyIQeKYCCore.EKYCEdgeDetection?, stable: Swift.Int)
+  public static func == (a: VerifyIQeKYCCore.EKYCLiveFrameResult, b: VerifyIQeKYCCore.EKYCLiveFrameResult) -> Swift.Bool
+}
+public enum EKYCEdgeDetector {
+  public static func detect(grey: [Swift.Float], width w: Swift.Int, height h: Swift.Int, guide: VerifyIQeKYCCore.EKYCPixelRect, config d: VerifyIQeKYCCore.EKYCLiveGateConfig.EdgeDetection) -> VerifyIQeKYCCore.EKYCEdgeDetection
+}
+final public class EKYCLiveGateAnalyzer {
+  final public let config: VerifyIQeKYCCore.EKYCLiveGateConfig
+  final public let qualityGate: VerifyIQeKYCCore.EKYCQualityGateConfig
+  final public var stable: Swift.Int {
+    get
+  }
+  public init(config: VerifyIQeKYCCore.EKYCLiveGateConfig, qualityGate: VerifyIQeKYCCore.EKYCQualityGateConfig)
+  final public func reset()
+  final public func analyze(_ frame: VerifyIQeKYCCore.EKYCLiveFrame) -> VerifyIQeKYCCore.EKYCLiveFrameResult
+  public static func frame(bytes: Swift.UnsafePointer<Swift.UInt8>, bytesPerRow: Swift.Int, bufferWidth: Swift.Int, bufferHeight: Swift.Int, redOffset: Swift.Int, greenOffset: Swift.Int, blueOffset: Swift.Int, analysis: VerifyIQeKYCCore.EKYCPixelRect, guide: VerifyIQeKYCCore.EKYCPixelRect, analysisWidth: Swift.Int, glarePixelThreshold: Swift.Int, captureScale: Swift.Double = 1) -> VerifyIQeKYCCore.EKYCLiveFrame?
+  @objc deinit
+}
+public struct EKYCLivenessCredentials : Swift.Equatable, Swift.CustomStringConvertible {
+  public let accessKeyId: Swift.String
+  public let secretAccessKey: Swift.String
+  public let sessionToken: Swift.String
+  public let expiration: Foundation.Date?
+  public init(accessKeyId: Swift.String, secretAccessKey: Swift.String, sessionToken: Swift.String, expiration: Foundation.Date?)
+  public var description: Swift.String {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCLivenessCredentials, b: VerifyIQeKYCCore.EKYCLivenessCredentials) -> Swift.Bool
+}
+public struct EKYCLivenessStart : Swift.Equatable {
+  public let attemptId: Foundation.UUID
+  public let livenessSessionId: Swift.String
+  public let provider: Swift.String
+  public let region: Swift.String?
+  public let credentials: VerifyIQeKYCCore.EKYCLivenessCredentials?
+  public init(attemptId: Foundation.UUID, livenessSessionId: Swift.String, provider: Swift.String, region: Swift.String?, credentials: VerifyIQeKYCCore.EKYCLivenessCredentials?)
+  public var isSimulated: Swift.Bool {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCLivenessStart, b: VerifyIQeKYCCore.EKYCLivenessStart) -> Swift.Bool
+}
+public enum EKYCLivenessProvider {
+  public static let awsRekognition: Swift.String
+  public static let simulated: Swift.String
+}
+public enum EKYCLivenessRunResult : Swift.Equatable {
+  case completed
+  case cancelled
+  case failed(VerifyIQeKYCCore.EKYCError)
+  public static func == (a: VerifyIQeKYCCore.EKYCLivenessRunResult, b: VerifyIQeKYCCore.EKYCLivenessRunResult) -> Swift.Bool
+}
+public protocol EKYCLivenessRunner : AnyObject {
+  var supportsCurrentDevice: Swift.Bool { get }
+  func runLiveness(_ start: VerifyIQeKYCCore.EKYCLivenessStart, completion: @escaping (VerifyIQeKYCCore.EKYCLivenessRunResult) -> Swift.Void)
+}
+final public class EKYCSimulatedLivenessRunner : VerifyIQeKYCCore.EKYCLivenessRunner {
+  final public var runs: [VerifyIQeKYCCore.EKYCLivenessStart] {
+    get
+  }
+  public init(result: VerifyIQeKYCCore.EKYCLivenessRunResult = .completed, queue: Dispatch.DispatchQueue = .main)
+  final public var supportsCurrentDevice: Swift.Bool {
+    get
+  }
+  final public func runLiveness(_ start: VerifyIQeKYCCore.EKYCLivenessStart, completion: @escaping (VerifyIQeKYCCore.EKYCLivenessRunResult) -> Swift.Void)
+  @objc deinit
+}
+public struct EKYCPinningPolicy : Swift.Equatable {
+  public var pins: [Swift.String : Swift.Set<Swift.String>]
+  public init(pins: [Swift.String : Swift.Set<Swift.String>])
+  public static let verifyIQPins: Swift.Set<Swift.String>
+  public static let `default`: VerifyIQeKYCCore.EKYCPinningPolicy
+  public func expectedPins(host: Swift.String) -> Swift.Set<Swift.String>
+  public func requiresPinning(host: Swift.String) -> Swift.Bool
+  public func accepts(host: Swift.String, spkiHashes: [Swift.String]) -> Swift.Bool
+  public static func == (a: VerifyIQeKYCCore.EKYCPinningPolicy, b: VerifyIQeKYCCore.EKYCPinningPolicy) -> Swift.Bool
+}
+public struct EKYCQualityGateConfig : Swift.Codable, Swift.Equatable {
+  public let blurBlockBelow: Swift.Double
+  public let blurCheckBelow: Swift.Double
+  public let glarePixelThreshold: Swift.Int
+  public let glareCheckAbove: Swift.Double
+  public let glareBlockAbove: Swift.Double
+  public let glareHardBlockAbove: Swift.Double
+  public let glareHologramCap: Swift.Bool
+  public let minLongEdgeBlockPx: Swift.Int
+  public let minLongEdgeCheckPx: Swift.Int
+  public let aspectBlockTolerance: Swift.Double
+  public let aspectCheckTolerance: Swift.Double
+  public init(blurBlockBelow: Swift.Double, blurCheckBelow: Swift.Double, glarePixelThreshold: Swift.Int, glareCheckAbove: Swift.Double, glareBlockAbove: Swift.Double, glareHardBlockAbove: Swift.Double, glareHologramCap: Swift.Bool, minLongEdgeBlockPx: Swift.Int, minLongEdgeCheckPx: Swift.Int, aspectBlockTolerance: Swift.Double, aspectCheckTolerance: Swift.Double)
+  public static let `default`: VerifyIQeKYCCore.EKYCQualityGateConfig
+  public static func == (a: VerifyIQeKYCCore.EKYCQualityGateConfig, b: VerifyIQeKYCCore.EKYCQualityGateConfig) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum EKYCQualityBadge : Swift.String, Swift.Equatable {
+  case good
+  case check
+  case blocked
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCQualityLevel : Swift.String, Swift.Equatable, Swift.Comparable {
+  case ok
+  case check
+  case blocked
+  public static func < (lhs: VerifyIQeKYCCore.EKYCQualityLevel, rhs: VerifyIQeKYCCore.EKYCQualityLevel) -> Swift.Bool
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCQualityMeasure : Swift.String, Swift.Codable, Swift.Equatable, Swift.CaseIterable {
+  case blur
+  case glare
+  case resolution
+  case aspect
+  public init?(rawValue: Swift.String)
+  public typealias AllCases = [VerifyIQeKYCCore.EKYCQualityMeasure]
+  public typealias RawValue = Swift.String
+  nonisolated public static var allCases: [VerifyIQeKYCCore.EKYCQualityMeasure] {
+    get
+  }
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct EKYCQualityMetrics : Swift.Equatable {
+  public let blurVariance: Swift.Double
+  public let glareShare: Swift.Double
+  public let longEdgePx: Swift.Int
+  public let aspectDeviation: Swift.Double
+  public init(blurVariance: Swift.Double, glareShare: Swift.Double, longEdgePx: Swift.Int, aspectDeviation: Swift.Double)
+  public static func == (a: VerifyIQeKYCCore.EKYCQualityMetrics, b: VerifyIQeKYCCore.EKYCQualityMetrics) -> Swift.Bool
+}
+public struct EKYCQualityGateResult : Swift.Equatable {
+  public let badge: VerifyIQeKYCCore.EKYCQualityBadge
+  public let reason: VerifyIQeKYCCore.EKYCQualityMeasure?
+  public let levels: [VerifyIQeKYCCore.EKYCQualityMeasure : VerifyIQeKYCCore.EKYCQualityLevel]
+  public let metrics: VerifyIQeKYCCore.EKYCQualityMetrics
+  public init(badge: VerifyIQeKYCCore.EKYCQualityBadge, reason: VerifyIQeKYCCore.EKYCQualityMeasure?, levels: [VerifyIQeKYCCore.EKYCQualityMeasure : VerifyIQeKYCCore.EKYCQualityLevel], metrics: VerifyIQeKYCCore.EKYCQualityMetrics)
+  public static func == (a: VerifyIQeKYCCore.EKYCQualityGateResult, b: VerifyIQeKYCCore.EKYCQualityGateResult) -> Swift.Bool
+}
+public enum EKYCQualityGate {
+  public static func targetAspect(for documentType: VerifyIQeKYCCore.EKYCDocumentType) -> Swift.Double
+  public static func evaluate(jpegData: Foundation.Data, documentType: VerifyIQeKYCCore.EKYCDocumentType, config: VerifyIQeKYCCore.EKYCQualityGateConfig) -> VerifyIQeKYCCore.EKYCQualityGateResult?
+  public static func evaluate(image: CoreGraphics.CGImage, documentType: VerifyIQeKYCCore.EKYCDocumentType, config: VerifyIQeKYCCore.EKYCQualityGateConfig) -> VerifyIQeKYCCore.EKYCQualityGateResult
+  public static func verdict(for m: VerifyIQeKYCCore.EKYCQualityMetrics, config t: VerifyIQeKYCCore.EKYCQualityGateConfig) -> VerifyIQeKYCCore.EKYCQualityGateResult
+  public static func laplacianVariance(_ y: [Swift.Float], width w: Swift.Int, height h: Swift.Int) -> Swift.Double
+}
+public enum AttestationUnavailableReason : Swift.String, Swift.Codable, Swift.Equatable {
+  case simulator
+  case unsupportedOS
+  case noPlayServices
+  case providerError
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum EKYCAttestationPayload : Swift.Equatable {
+  case appAttest(keyId: Swift.String, attestationObject: Swift.String)
+  case deviceCheck(token: Swift.String)
+  case unavailable(reason: VerifyIQeKYCCore.AttestationUnavailableReason, detail: Swift.String?)
+  public var type: Swift.String {
+    get
+  }
+  public static func == (a: VerifyIQeKYCCore.EKYCAttestationPayload, b: VerifyIQeKYCCore.EKYCAttestationPayload) -> Swift.Bool
+}
+extension VerifyIQeKYCCore.EKYCAttestationPayload : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public enum EKYCServerLivenessMode : Swift.String, Swift.Codable, Swift.Equatable {
+  case required
+  case whenSupported
+  case disabled
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public struct EKYCConfirmationFields : Swift.Codable, Swift.Equatable {
+  public let documentNumber: Swift.String?
+  public let givenNameEn: Swift.String?
+  public let surnameEn: Swift.String?
+  public let dateOfBirth: Swift.String?
+  public let expirationDate: Swift.String?
+  public init(documentNumber: Swift.String?, givenNameEn: Swift.String?, surnameEn: Swift.String?, dateOfBirth: Swift.String?, expirationDate: Swift.String?)
+  public func value(for field: Swift.String) -> Swift.String?
+  public static func == (a: VerifyIQeKYCCore.EKYCConfirmationFields, b: VerifyIQeKYCCore.EKYCConfirmationFields) -> Swift.Bool
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct EKYCStrings : Swift.Equatable {
+  public let locale: VerifyIQeKYCCore.EKYCLocale
+  public let overrides: [Swift.String : Swift.String]
+  public init(locale: VerifyIQeKYCCore.EKYCLocale, overrides: [Swift.String : Swift.String] = [:])
+  public func text(_ key: Swift.String) -> Swift.String
+  public func textIfPresent(_ key: Swift.String) -> Swift.String?
+  public func text(_ key: Swift.String, n: Swift.Int) -> Swift.String
+  public static func captureMessageKey(_ raw: Swift.String?) -> Swift.String
+  public static func untranslatedKeys(for locale: VerifyIQeKYCCore.EKYCLocale) -> [Swift.String]
+  public static func == (a: VerifyIQeKYCCore.EKYCStrings, b: VerifyIQeKYCCore.EKYCStrings) -> Swift.Bool
+}
+public struct EKYCHTTPResponse : Swift.Equatable {
+  public let status: Swift.Int
+  public let headers: [Swift.String : Swift.String]
+  public let body: Foundation.Data
+  public init(status: Swift.Int, headers: [Swift.String : Swift.String] = [:], body: Foundation.Data = Data())
+  public static func == (a: VerifyIQeKYCCore.EKYCHTTPResponse, b: VerifyIQeKYCCore.EKYCHTTPResponse) -> Swift.Bool
+}
+public enum EKYCTransportError : Swift.Error, Swift.Equatable {
+  case pinningFailed
+  case unreachable
+  case invalidResponse
+  public static func == (a: VerifyIQeKYCCore.EKYCTransportError, b: VerifyIQeKYCCore.EKYCTransportError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol EKYCTransport : AnyObject {
+  func send(_ request: Foundation.URLRequest, completion: @escaping (Swift.Result<VerifyIQeKYCCore.EKYCHTTPResponse, VerifyIQeKYCCore.EKYCTransportError>) -> Swift.Void)
+}
+@objc final public class EKYCURLSessionTransport : ObjectiveC.NSObject, VerifyIQeKYCCore.EKYCTransport, Foundation.URLSessionTaskDelegate {
+  public init(pinning: VerifyIQeKYCCore.EKYCPinningPolicy = .default, timeout: Foundation.TimeInterval = 30, protocolClasses: [Swift.AnyClass]? = nil)
+  @objc deinit
+  final public func send(_ request: Foundation.URLRequest, completion: @escaping (Swift.Result<VerifyIQeKYCCore.EKYCHTTPResponse, VerifyIQeKYCCore.EKYCTransportError>) -> Swift.Void)
+  @objc final public func urlSession(_ session: Foundation.URLSession, task: Foundation.URLSessionTask, didReceive challenge: Foundation.URLAuthenticationChallenge, completionHandler: @escaping (Foundation.URLSession.AuthChallengeDisposition, Foundation.URLCredential?) -> Swift.Void)
+}
+extension VerifyIQeKYCCore.EKYCDocumentType : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCDocumentType : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCDocumentSide : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCDocumentSide : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCStage : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCStage : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCRetryBudget : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCRetryBudget : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCCaptureMessageKey : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCCaptureMessageKey : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCCaptureFlag : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCCaptureFlag : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCEndingScreen : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCEndingScreen : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCServerErrorCode : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCServerErrorCode : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCHostErrorCode : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCHostErrorCode : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCLocale : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCLocale : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCLivenessMode : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCEnvironment : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCEnvironment : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCEventName : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCEventName : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCRejectionReason : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCProgress : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCRetryKind : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCRetryDecision : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCSelfieIntroDecision : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCCameraPermissionDecision : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCConfirmationDecision : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCExpiredDecision : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCErrorDecision : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCLiveIssue : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCLiveIssue : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCQualityBadge : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCQualityBadge : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCQualityLevel : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCQualityLevel : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCQualityMeasure : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCQualityMeasure : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.AttestationUnavailableReason : Swift.Hashable {}
+extension VerifyIQeKYCCore.AttestationUnavailableReason : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCServerLivenessMode : Swift.Hashable {}
+extension VerifyIQeKYCCore.EKYCServerLivenessMode : Swift.RawRepresentable {}
+extension VerifyIQeKYCCore.EKYCTransportError : Swift.Hashable {}
