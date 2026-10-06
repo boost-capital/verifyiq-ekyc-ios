@@ -6,7 +6,7 @@ separate download. This repository is written by the release process; changes ma
 overwritten.
 
 ```swift
-.package(url: "https://github.com/boost-capital/verifyiq-ekyc-ios", exact: "0.9.2"),
+.package(url: "https://github.com/boost-capital/verifyiq-ekyc-ios", exact: "0.9.3"),
 ```
 
 Product `VerifyIQeKYC`. For the liveness check (iOS 15 and later) add
